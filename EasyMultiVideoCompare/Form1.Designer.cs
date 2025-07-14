@@ -37,8 +37,11 @@
             lb_Folders = new ListBox();
             btn_AddFolder = new Button();
             tb_Run = new TabPage();
+            tableLayoutPanel2 = new TableLayoutPanel();
+            lpb_RunProgressOverall = new LabeledProgressBar();
+            lpb_RunProgressCompare = new LabeledProgressBar();
+            lpb_RunProgressCreateHashes = new LabeledProgressBar();
             tb_Log = new TextBox();
-            lpb_RunProgress = new LabeledProgressBar();
             tp_Results = new TabPage();
             splitContainer1 = new SplitContainer();
             groupBox2 = new GroupBox();
@@ -57,6 +60,7 @@
             tp_Selection.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
             tb_Run.SuspendLayout();
+            tableLayoutPanel2.SuspendLayout();
             tp_Results.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
             splitContainer1.Panel1.SuspendLayout();
@@ -175,8 +179,8 @@
             // 
             // tb_Run
             // 
+            tb_Run.Controls.Add(tableLayoutPanel2);
             tb_Run.Controls.Add(tb_Log);
-            tb_Run.Controls.Add(lpb_RunProgress);
             tb_Run.Location = new Point(4, 24);
             tb_Run.Name = "tb_Run";
             tb_Run.Padding = new Padding(3);
@@ -185,27 +189,66 @@
             tb_Run.Text = "Run";
             tb_Run.UseVisualStyleBackColor = true;
             // 
+            // tableLayoutPanel2
+            // 
+            tableLayoutPanel2.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            tableLayoutPanel2.ColumnCount = 2;
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel2.Controls.Add(lpb_RunProgressOverall, 0, 0);
+            tableLayoutPanel2.Controls.Add(lpb_RunProgressCompare, 1, 1);
+            tableLayoutPanel2.Controls.Add(lpb_RunProgressCreateHashes, 0, 1);
+            tableLayoutPanel2.Location = new Point(6, 6);
+            tableLayoutPanel2.Name = "tableLayoutPanel2";
+            tableLayoutPanel2.RowCount = 2;
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel2.Size = new Size(740, 54);
+            tableLayoutPanel2.TabIndex = 4;
+            // 
+            // lpb_RunProgressOverall
+            // 
+            lpb_RunProgressOverall.AddTextBefore = "Overall";
+            tableLayoutPanel2.SetColumnSpan(lpb_RunProgressOverall, 2);
+            lpb_RunProgressOverall.Dock = DockStyle.Fill;
+            lpb_RunProgressOverall.Location = new Point(3, 3);
+            lpb_RunProgressOverall.Maximum = 20000;
+            lpb_RunProgressOverall.Name = "lpb_RunProgressOverall";
+            lpb_RunProgressOverall.Size = new Size(734, 21);
+            lpb_RunProgressOverall.TabIndex = 3;
+            // 
+            // lpb_RunProgressCompare
+            // 
+            lpb_RunProgressCompare.AddTextBefore = "Compare";
+            lpb_RunProgressCompare.Dock = DockStyle.Fill;
+            lpb_RunProgressCompare.Location = new Point(373, 30);
+            lpb_RunProgressCompare.Maximum = 10000;
+            lpb_RunProgressCompare.Name = "lpb_RunProgressCompare";
+            lpb_RunProgressCompare.Size = new Size(364, 21);
+            lpb_RunProgressCompare.TabIndex = 2;
+            // 
+            // lpb_RunProgressCreateHashes
+            // 
+            lpb_RunProgressCreateHashes.AddTextBefore = "Create Hashes";
+            lpb_RunProgressCreateHashes.Dock = DockStyle.Fill;
+            lpb_RunProgressCreateHashes.Location = new Point(3, 30);
+            lpb_RunProgressCreateHashes.Maximum = 10000;
+            lpb_RunProgressCreateHashes.Name = "lpb_RunProgressCreateHashes";
+            lpb_RunProgressCreateHashes.Size = new Size(364, 21);
+            lpb_RunProgressCreateHashes.TabIndex = 0;
+            // 
             // tb_Log
             // 
             tb_Log.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             tb_Log.Font = new Font("Consolas", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            tb_Log.Location = new Point(6, 43);
+            tb_Log.Location = new Point(6, 66);
             tb_Log.Multiline = true;
             tb_Log.Name = "tb_Log";
             tb_Log.ReadOnly = true;
             tb_Log.ScrollBars = ScrollBars.Both;
-            tb_Log.Size = new Size(740, 336);
+            tb_Log.Size = new Size(740, 224);
             tb_Log.TabIndex = 1;
             tb_Log.WordWrap = false;
-            // 
-            // lpb_RunProgress
-            // 
-            lpb_RunProgress.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            lpb_RunProgress.Location = new Point(6, 6);
-            lpb_RunProgress.Maximum = 10000;
-            lpb_RunProgress.Name = "lpb_RunProgress";
-            lpb_RunProgress.Size = new Size(740, 31);
-            lpb_RunProgress.TabIndex = 0;
             // 
             // tp_Results
             // 
@@ -377,6 +420,7 @@
             tableLayoutPanel1.ResumeLayout(false);
             tb_Run.ResumeLayout(false);
             tb_Run.PerformLayout();
+            tableLayoutPanel2.ResumeLayout(false);
             tp_Results.ResumeLayout(false);
             splitContainer1.Panel1.ResumeLayout(false);
             splitContainer1.Panel2.ResumeLayout(false);
@@ -411,7 +455,7 @@
         private Button btn_Options;
         private Button btn_RemoveSelectedFolder;
         private Button btn_AddFolder;
-        private LabeledProgressBar lpb_RunProgress;
+        private LabeledProgressBar lpb_RunProgressCreateHashes;
         private TextBox tb_Log;
         private ImageTreeView itv_Results;
         private SplitContainer splitContainer1;
@@ -424,5 +468,8 @@
         private TreeView tv_ResultFile1;
         private TreeView tv_ResultFile2;
         private UCVideoViewer ucVideoViewer1;
+        private LabeledProgressBar lpb_RunProgressCompare;
+        private TableLayoutPanel tableLayoutPanel2;
+        private LabeledProgressBar lpb_RunProgressOverall;
     }
 }

@@ -1,6 +1,7 @@
 ﻿#region Using...
 
 using System.Drawing.Text;
+using System.ComponentModel;
 
 #endregion
 
@@ -8,6 +9,13 @@ namespace EasyMultiVideoCompare
 {
     public class LabeledProgressBar : ProgressBar
     {
+        #region --- Variables ---
+
+        [DesignerSerializationVisibility(DesignerSerializationVisibility.Visible)]
+        public string AddTextBefore { get; set; } = "";
+
+        #endregion
+
         #region --- Constructor ---
 
         public LabeledProgressBar()
@@ -31,6 +39,8 @@ namespace EasyMultiVideoCompare
             ProgressBarRenderer.DrawHorizontalChunks(g, rect);
 
             string text = $"{((double)Value/Maximum*100):0.00} %";
+            if (!string.IsNullOrWhiteSpace(AddTextBefore))
+                text = AddTextBefore + ": " + text;
 
             using (StringFormat sf = new StringFormat()
             {

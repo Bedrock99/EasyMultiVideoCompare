@@ -119,20 +119,22 @@ namespace EasyMultiVideoCompare
                 Invoke((MethodInvoker)delegate
                 {
                     tb_Log.Text = "[" + DateTime.Now.ToString("HH:mm:ss.fff") + "] " + $"Loaded {m_lstFiles.Count} videos!\r\n";
-                    lpb_RunProgress.Maximum = m_lstFiles.Count;
+                    lpb_RunProgressCreateHashes.Maximum = m_lstFiles.Count;
+                    lpb_RunProgressCompare.Maximum = m_lstFiles.Count;
+                    lpb_RunProgressOverall.Maximum = m_lstFiles.Count * 2;
                 });
 
                 // Generate compare hashes
                 for (int i = 0; i < m_lstFiles.Count; i++)
                 {
-                    UpdateState(i, $"Loading compare hash [{(i + 1)}/{m_lstFiles.Count}] {m_lstFiles[i].GeneralInfo.Name}...");
+                    UpdateState(i, -1, $"Loading compare hash [{(i + 1)}/{m_lstFiles.Count}] {m_lstFiles[i].GeneralInfo.Name}...");
                     m_lstFiles[i].GenerateCompareHashes();
                 }
 
                 //compare
                 for (int i = 0; i < m_lstFiles.Count; i++)
                 {
-                    UpdateState(m_lstFiles.Count, $"Comparing [{(i + 1)}/{m_lstFiles.Count}] {m_lstFiles[i].GeneralInfo.Name}...");
+                    UpdateState(m_lstFiles.Count, i, $"Comparing [{(i + 1)}/{m_lstFiles.Count}] {m_lstFiles[i].GeneralInfo.Name}...");
 
                     DoCompareFile(m_lstFiles[i], i);
                 }
@@ -141,7 +143,7 @@ namespace EasyMultiVideoCompare
                 OutputResults();
                 Invoke((MethodInvoker)delegate
                 {
-                    lpb_RunProgress.Value = lpb_RunProgress.Maximum;
+                    lpb_RunProgressCreateHashes.Value = lpb_RunProgressCreateHashes.Maximum;
                     tc_Main.SelectTab(2);
 
                     btn_AddFolder.Enabled = true;
@@ -226,14 +228,17 @@ namespace EasyMultiVideoCompare
 
         #region --- UpdateState ---
 
-        void UpdateState(int iProgress_, string strText = "")
+        void UpdateState(int iProgressCreateHashes_, int iProgressCompare_, string strText = "")
         {
             Invoke((MethodInvoker)delegate
             {
                 if (!string.IsNullOrWhiteSpace(strText))
                     tb_Log.AppendText("[" + DateTime.Now.ToString("HH:mm:ss.fff") + "] " + strText + "\r\n");
-                if (iProgress_ != -1)
-                    lpb_RunProgress.Value = iProgress_;
+                if (iProgressCreateHashes_ != -1)
+                    lpb_RunProgressCreateHashes.Value = iProgressCreateHashes_;
+                if (iProgressCompare_ != -1)
+                    lpb_RunProgressCompare.Value = iProgressCompare_;
+                lpb_RunProgressOverall.Value = lpb_RunProgressCreateHashes.Value + lpb_RunProgressCompare.Value;
             });
         }
 
