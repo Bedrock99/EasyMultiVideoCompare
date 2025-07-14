@@ -41,7 +41,7 @@ Source: "..\EasyMultiVideoCompare\bin\Release\net9.0-windows7.0\OpenCvSharp.dll"
 Source: "..\EasyMultiVideoCompare\bin\Release\net9.0-windows7.0\OpenCvSharp.Extensions.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\EasyMultiVideoCompare\bin\Release\net9.0-windows7.0\EasyMultiVideoCompare.deps.json"; DestDir: "{app}"; Flags: ignoreversion
 Source: "..\EasyMultiVideoCompare\bin\Release\net9.0-windows7.0\EasyMultiVideoCompare.runtimeconfig.json"; DestDir: "{app}"; Flags: ignoreversion
-Source: "..\EasyMultiVideoCompare\bin\Release\net9.0-windows7.0\runtimes\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\EasyMultiVideoCompare\bin\Release\net9.0-windows7.0\runtimes\*"; DestDir: "{app}\runtimes"; Flags: ignoreversion recursesubdirs createallsubdirs
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 
 [Icons]
