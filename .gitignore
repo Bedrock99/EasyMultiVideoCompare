@@ -1,3 +1,4 @@
 EasyMultiVideoCompare/bin
 EasyMultiVideoCompare/obj
 .vs
+Setup/Output/*.exe
