@@ -140,10 +140,13 @@ namespace EasyMultiVideoCompare
                 }
 
                 //output results
+                UpdateState(m_lstFiles.Count, m_lstFiles.Count, "Putting out results...");
                 OutputResults();
                 Invoke((MethodInvoker)delegate
                 {
                     lpb_RunProgressCreateHashes.Value = lpb_RunProgressCreateHashes.Maximum;
+                    lpb_RunProgressCompare.Value = lpb_RunProgressCompare.Maximum;
+                    lpb_RunProgressOverall.Value = lpb_RunProgressOverall.Maximum;
                     tc_Main.SelectTab(2);
 
                     btn_AddFolder.Enabled = true;
@@ -160,11 +163,15 @@ namespace EasyMultiVideoCompare
             CResult result = new CResult(pFile_);
             for (int i = iCurPos_ + 1; i < m_lstFiles.Count; i++)
             {
+                //Do not compare already compared files again
+                if (IsAlreadyCompared(pFile_, m_lstFiles[i]))
+                    continue;
+
                 List<(int startIndex, double avgHammingDistance)> matches = VideoHasher.FindClipInVideo(
                         pFile_.CompareHashes, m_lstFiles[i].CompareHashes, maxHammingDistanceThreshold: CConfig.MaxHammingDistance,
                         minMatchRatio: CConfig.MinMatchRatio);
 
-                if (matches.Count > 0) //TODO Save matches for results view to show where the match was?
+                if (matches.Count > 0)
                 {
                     double dist = 0;
                     foreach (var match in matches)
@@ -172,7 +179,7 @@ namespace EasyMultiVideoCompare
                         dist += match.avgHammingDistance;
                     }
                     if (!m_lstDuplicates.Contains2(m_lstFiles[i]))
-                        result.AddCompareFile(m_lstFiles[i], dist / matches.Count);
+                        result.AddCompareFile(m_lstFiles[i], dist / matches.Count, matches);
                 }
             }
 
@@ -180,6 +187,52 @@ namespace EasyMultiVideoCompare
                 m_lstDuplicates.Add(result);
         }
 
+        bool IsAlreadyCompared(CVideoFile pFile1_, CVideoFile pFile2_)
+        {
+            foreach (var match in m_lstDuplicates)
+            {
+                //One of the main files
+                if (match.File.GeneralInfo.FullName == pFile1_.GeneralInfo.FullName)
+                {
+                    foreach(var match2 in match.ComparableFiles)
+                        if (match2.File.GeneralInfo.FullName == pFile2_.GeneralInfo.FullName)
+                            return true;
+                }
+                if (match.File.GeneralInfo.FullName == pFile2_.GeneralInfo.FullName)
+                {
+                    foreach (var match2 in match.ComparableFiles)
+                        if (match2.File.GeneralInfo.FullName == pFile1_.GeneralInfo.FullName)
+                            return true;
+                }
+
+                //one of the compared files
+                foreach (var match2 in match.ComparableFiles)
+                {
+                    if (match2.File.GeneralInfo.FullName == pFile2_.GeneralInfo.FullName)
+                    {
+                        if(pFile1_.GeneralInfo.FullName == match.File.GeneralInfo.FullName)
+                            return true;
+
+                        foreach (var match3 in match.ComparableFiles)
+                            if (match3.File.GeneralInfo.FullName == pFile1_.GeneralInfo.FullName)
+                                return true;
+                    }
+                    if (match2.File.GeneralInfo.FullName == pFile1_.GeneralInfo.FullName)
+                    {
+                        if(pFile2_.GeneralInfo.FullName == match.File.GeneralInfo.FullName)
+                            return true;
+
+                        foreach (var match3 in match.ComparableFiles)
+                            if (match3.File.GeneralInfo.FullName == pFile2_.GeneralInfo.FullName)
+                                return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        //TODO New View with Option to do something with the found duplicates -> also automatically say which to keep
         void OutputResults()
         {
             Invoke((MethodInvoker)delegate

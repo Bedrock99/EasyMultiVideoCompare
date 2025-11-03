@@ -1,6 +1,5 @@
 ﻿namespace EasyMultiVideoCompare
-{
-    public class CResult
+{  public class CResult
     {
         #region --- Variables and Properties ---
 
@@ -13,6 +12,7 @@
                 return GetAvgHammingDistance();
             }
         }
+  
 
         #endregion
 
@@ -27,9 +27,9 @@
 
         #region --- Functions ---
 
-        public void AddCompareFile(CVideoFile file, double distance)
+        public void AddCompareFile(CVideoFile file, double distance, List<(int startIndex, double avgHammingDistance)> matches_)
         {
-            ComparableFiles.Add(new CResultCompare(file, distance));
+            ComparableFiles.Add(new CResultCompare(file, distance, matches_));
         }
 
         public double GetAvgHammingDistance()
