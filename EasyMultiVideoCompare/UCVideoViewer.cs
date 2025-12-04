@@ -6,6 +6,7 @@
 
         CVideoFile MainFile;
         CVideoFile CompareFile;
+        List<CHashMatch> Matches = new List<CHashMatch>();
 
         Bitmap MainBitmap;
         Bitmap CompareBitmap;
@@ -50,16 +51,30 @@
             cb_MakeImagesSameSize.Enabled = bEnable;
             gb_CompareVid.Enabled = bEnable;
             gb_MainVid.Enabled = bEnable;
+            btn_GoToMatchBegin.Enabled = bEnable;
+            btn_GoToMatchEnd.Enabled = bEnable;
         }
 
         #endregion
 
         #region --- Set/Clear Videos ---
 
-        public void SetVideos(CVideoFile mainFile, CVideoFile compareFile)
+        public void SetVideos(CVideoFile mainFile, CResultCompare compareFile)
         {
             MainFile = mainFile;
-            CompareFile = compareFile;
+            CompareFile = compareFile.File;
+            Matches = compareFile.Matches;
+
+            //TODO out with this
+            if (Matches.Count > 1)
+            {
+                string str = $"Matchcount: {Matches.Count}\r\n\r\n";
+                foreach(var m in Matches)
+                {
+                    str += $"{m.StartHashNumber} to {m.HashCount} - {m.HammingDistance}\r\n";
+                }
+                MessageBox.Show(str);
+            }
 
             gb_MainVid.Text = MainFile.GeneralInfo.Name;
             gb_CompareVid.Text = CompareFile.GeneralInfo.Name;
@@ -100,7 +115,7 @@
             if (cb_MoveSlidersTogether.Checked && !MoveSliderProgramatically)
             {
                 MoveSliderProgramatically = true;
-                tb_CompareVid.Value = Math.Clamp(tb_CompareVid.Minimum, tb_MainVid.Value, tb_CompareVid.Maximum);
+                tb_CompareVid.Value = Clamp(tb_CompareVid.Minimum, tb_MainVid.Value - Matches[0].StartHashNumber + 1, tb_CompareVid.Maximum);
                 UpdateCompareBitmap();
                 MoveSliderProgramatically = false;
             }
@@ -113,12 +128,21 @@
             if (cb_MoveSlidersTogether.Checked && !MoveSliderProgramatically)
             {
                 MoveSliderProgramatically = true;
-                tb_MainVid.Value = Math.Clamp(tb_MainVid.Minimum, tb_CompareVid.Value, tb_MainVid.Maximum);
+                tb_MainVid.Value = Clamp(tb_MainVid.Minimum, tb_CompareVid.Value + Matches[0].StartHashNumber - 1, tb_MainVid.Maximum);
                 UpdateMainBitmap();
                 MoveSliderProgramatically = false;
             }
             UpdateCompareBitmap();
             UpdateImage();
+        }
+
+        private int Clamp(int min, int val, int max)
+        {
+            if (val < min)
+                return min;
+            if (val > max)
+                return max;
+            return val;
         }
 
         #endregion
@@ -127,7 +151,7 @@
 
         void UpdateMainBitmap()
         {
-            gb_MainVid.Text = $"Frame {tb_MainVid.Value+1} of {MainFile.VideoInformation.FrameCount}";
+            gb_MainVid.Text = $"Frame {tb_MainVid.Value + 1} of {MainFile.VideoInformation.FrameCount}";
             (MainBitmap, string? message) = VideoFrameReaderOpenCvSharp.ReadFrame(MainFile.GeneralInfo.FullName, tb_MainVid.Value);
             if (MainBitmap == null)
                 MainBitmap = Resources.error;
@@ -135,7 +159,7 @@
 
         void UpdateCompareBitmap()
         {
-            gb_CompareVid.Text = $"Frame {tb_CompareVid.Value+1} of {CompareFile.VideoInformation.FrameCount}";
+            gb_CompareVid.Text = $"Frame {tb_CompareVid.Value + 1} of {CompareFile.VideoInformation.FrameCount}";
             (CompareBitmap, string? message) = VideoFrameReaderOpenCvSharp.ReadFrame(CompareFile.GeneralInfo.FullName, tb_CompareVid.Value);
 
             if (CompareBitmap == null)
@@ -246,5 +270,25 @@
         }
 
         #endregion
+
+        private void btn_GoToMatchBegin_Click(object sender, EventArgs e)
+        {
+            MoveSliderProgramatically = true;
+            tb_CompareVid.Value = 0;
+            tb_MainVid.Value = Matches[0].StartHashNumber - 1;
+            UpdateMainBitmap();
+            UpdateCompareBitmap();
+            MoveSliderProgramatically = false;
+        }
+
+        private void btn_GoToMatchEnd_Click(object sender, EventArgs e)
+        {
+            MoveSliderProgramatically = true;
+            tb_MainVid.Value = Matches[0].HashCount - 1;
+            tb_CompareVid.Value = tb_CompareVid.Maximum ;
+            UpdateMainBitmap();
+            UpdateCompareBitmap();
+            MoveSliderProgramatically = false;
+        }
     }
 }

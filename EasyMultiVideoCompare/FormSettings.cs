@@ -1,5 +1,6 @@
 ﻿#region Using...
 
+using DarkModeForms;
 using System.ComponentModel;
 
 #endregion
@@ -19,6 +20,7 @@ namespace EasyMultiVideoCompare
         public FormSettings()
         {
             InitializeComponent();
+            new DarkModeCS(this);
             DialogResult = DialogResult.Abort;
             LoadConfig();
             lb_FileTypes.DataSource = SearchFileTypes;

@@ -37,6 +37,8 @@
             cb_MoveSlidersTogether = new CheckBox();
             cb_OneCompare = new CheckBox();
             cb_MakeImagesSameSize = new CheckBox();
+            btn_GoToMatchEnd = new Button();
+            btn_GoToMatchBegin = new Button();
             ((System.ComponentModel.ISupportInitialize)pb_Video).BeginInit();
             ((System.ComponentModel.ISupportInitialize)tb_MainVid).BeginInit();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
@@ -55,7 +57,7 @@
             pb_Video.Location = new Point(0, 0);
             pb_Video.Margin = new Padding(0);
             pb_Video.Name = "pb_Video";
-            pb_Video.Size = new Size(600, 133);
+            pb_Video.Size = new Size(600, 106);
             pb_Video.SizeMode = PictureBoxSizeMode.Zoom;
             pb_Video.TabIndex = 0;
             pb_Video.TabStop = false;
@@ -125,22 +127,22 @@
             // 
             cb_MoveSlidersTogether.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             cb_MoveSlidersTogether.AutoSize = true;
-            cb_MoveSlidersTogether.Location = new Point(457, 136);
+            cb_MoveSlidersTogether.Location = new Point(394, 116);
             cb_MoveSlidersTogether.Name = "cb_MoveSlidersTogether";
-            cb_MoveSlidersTogether.Size = new Size(140, 19);
+            cb_MoveSlidersTogether.Size = new Size(95, 34);
             cb_MoveSlidersTogether.TabIndex = 3;
-            cb_MoveSlidersTogether.Text = "Move sliders together";
+            cb_MoveSlidersTogether.Text = "Move sliders \r\ntogether";
             cb_MoveSlidersTogether.UseVisualStyleBackColor = true;
             // 
             // cb_OneCompare
             // 
             cb_OneCompare.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             cb_OneCompare.AutoSize = true;
-            cb_OneCompare.Location = new Point(3, 136);
+            cb_OneCompare.Location = new Point(111, 116);
             cb_OneCompare.Name = "cb_OneCompare";
-            cb_OneCompare.Size = new Size(293, 19);
+            cb_OneCompare.Size = new Size(162, 34);
             cb_OneCompare.TabIndex = 4;
-            cb_OneCompare.Text = "Use one compare image (else 2 next to each other)";
+            cb_OneCompare.Text = "Use one compare image \r\n(else 2 next to each other)";
             cb_OneCompare.UseVisualStyleBackColor = true;
             cb_OneCompare.CheckedChanged += cb_OneCompare_CheckedChanged;
             // 
@@ -148,18 +150,42 @@
             // 
             cb_MakeImagesSameSize.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             cb_MakeImagesSameSize.AutoSize = true;
-            cb_MakeImagesSameSize.Location = new Point(302, 136);
+            cb_MakeImagesSameSize.Location = new Point(289, 116);
             cb_MakeImagesSameSize.Name = "cb_MakeImagesSameSize";
-            cb_MakeImagesSameSize.Size = new Size(149, 19);
+            cb_MakeImagesSameSize.Size = new Size(99, 34);
             cb_MakeImagesSameSize.TabIndex = 5;
-            cb_MakeImagesSameSize.Text = "Make images same size";
+            cb_MakeImagesSameSize.Text = "Make images \r\nsame size";
             cb_MakeImagesSameSize.UseVisualStyleBackColor = true;
             cb_MakeImagesSameSize.CheckedChanged += cb_MakeImagesSameSize_CheckedChanged;
+            // 
+            // btn_GoToMatchEnd
+            // 
+            btn_GoToMatchEnd.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btn_GoToMatchEnd.Location = new Point(495, 109);
+            btn_GoToMatchEnd.Name = "btn_GoToMatchEnd";
+            btn_GoToMatchEnd.Size = new Size(102, 46);
+            btn_GoToMatchEnd.TabIndex = 6;
+            btn_GoToMatchEnd.Text = "Go to \r\nmatch end";
+            btn_GoToMatchEnd.UseVisualStyleBackColor = true;
+            btn_GoToMatchEnd.Click += btn_GoToMatchEnd_Click;
+            // 
+            // btn_GoToMatchBegin
+            // 
+            btn_GoToMatchBegin.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            btn_GoToMatchBegin.Location = new Point(3, 109);
+            btn_GoToMatchBegin.Name = "btn_GoToMatchBegin";
+            btn_GoToMatchBegin.Size = new Size(102, 46);
+            btn_GoToMatchBegin.TabIndex = 7;
+            btn_GoToMatchBegin.Text = "Go to \r\nmatch begin";
+            btn_GoToMatchBegin.UseVisualStyleBackColor = true;
+            btn_GoToMatchBegin.Click += btn_GoToMatchBegin_Click;
             // 
             // UCVideoViewer
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            Controls.Add(btn_GoToMatchBegin);
+            Controls.Add(btn_GoToMatchEnd);
             Controls.Add(cb_MakeImagesSameSize);
             Controls.Add(cb_OneCompare);
             Controls.Add(cb_MoveSlidersTogether);
@@ -194,5 +220,7 @@
         private CheckBox cb_MoveSlidersTogether;
         private CheckBox cb_OneCompare;
         private CheckBox cb_MakeImagesSameSize;
+        private Button btn_GoToMatchEnd;
+        private Button btn_GoToMatchBegin;
     }
 }

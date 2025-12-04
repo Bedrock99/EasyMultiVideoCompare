@@ -1,6 +1,7 @@
 ﻿#region Using...
 
 using OpenCvSharp;
+using System.Diagnostics;
 
 #endregion
 
@@ -121,11 +122,11 @@ namespace EasyMultiVideoCompare
         /// <param name="maxHammingDistanceThreshold">Maximum allowed Hamming distance per hash pair for a match.</param>
         /// <param name="minMatchRatio">Minimum ratio of matching hashes within the sliding window.</param>
         /// <returns>A list of tuples: (start index in main video hash sequence, average Hamming distance of the match).</returns>
-        public static List<(int startIndex, double avgHammingDistance)> FindClipInVideo(
+        public static List<CHashMatch> FindClipInVideo(
             List<ulong> mainVideoHashes, List<ulong> clipHashes,
-            int maxHammingDistanceThreshold = 8, double minMatchRatio = 0.75)
+            int maxHammingDistanceThreshold = 8, double minMatchRatio = 0.75, int sampleRate = 5)
         {
-            List<(int, double)> matches = new List<(int, double)>();
+            List<CHashMatch> matches = new List<CHashMatch>();
 
             if (clipHashes.Count == 0 || mainVideoHashes.Count < clipHashes.Count)
             {
@@ -151,7 +152,14 @@ namespace EasyMultiVideoCompare
                 double matchRatio = (double)currentMatchCount / clipHashes.Count;
                 if (matchRatio >= minMatchRatio)
                 {
-                    matches.Add((i, currentHammingSum / currentMatchCount));
+                    int iBegin = i * sampleRate;
+                    //TODO Begin and end not right
+                    //19 at begin, 17 at end in first video (Min1To2)
+                    //48 at begin, 47 at end in second video (Min2To210)
+                    matches.Add(new CHashMatch(
+                        iBegin,
+                        iBegin + clipHashes.Count * sampleRate, 
+                        currentHammingSum / currentMatchCount));
                 }
             }
             return matches;

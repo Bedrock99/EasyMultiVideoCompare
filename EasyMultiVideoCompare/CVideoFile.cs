@@ -106,7 +106,7 @@
                     (Bitmap bmp, errormessage) = VideoFrameReaderOpenCvSharp.ReadFrame(GeneralInfo.FullName, i * iOffset);
                     if(bmp != null)
                     {
-                        bmp = new Bitmap(bmp, bmp.Size.ResizeKeepAspect(iHeight_ * 2, iHeight_ - 15));
+                        bmp = new Bitmap(bmp, bmp.Size.ResizeKeepAspect(iHeight_ * 2, iHeight_));
                         Bitmaps.Add(bmp);
                     }
                 }
@@ -115,7 +115,7 @@
             //Set Error Images if image does not exist
             if (Bitmaps.Count < CConfig.PreviewBitmapCount)
             {
-                Bitmap bmp = new Bitmap(Resources.error, Resources.error.Size.ResizeKeepAspect(iHeight_ * 2, iHeight_ - 15));
+                Bitmap bmp = new Bitmap(Resources.error, Resources.error.Size.ResizeKeepAspect(iHeight_ * 2, iHeight_));
                 Bitmaps.Add(bmp);
             }
             return true;

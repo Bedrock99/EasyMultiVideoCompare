@@ -2,6 +2,7 @@
 
 using System.Drawing.Text;
 using System.ComponentModel;
+using DarkModeForms;
 
 #endregion
 
@@ -35,6 +36,11 @@ namespace EasyMultiVideoCompare
             g.TextRenderingHint = TextRenderingHint.AntiAlias;
 
             ProgressBarRenderer.DrawHorizontalBar(g, rect);
+            using (SolidBrush bg = new SolidBrush(Color.FromArgb(128, BackColor)))
+            {
+                g.FillRectangle(bg, rect);
+            }
+
             rect.Width = (int)(rect.Width * ((double)Value / Maximum));
             ProgressBarRenderer.DrawHorizontalChunks(g, rect);
 

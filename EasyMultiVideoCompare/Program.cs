@@ -1,3 +1,5 @@
+#pragma warning disable WFO5001
+
 namespace EasyMultiVideoCompare
 {
     internal static class Program
@@ -11,6 +13,7 @@ namespace EasyMultiVideoCompare
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
+            Application.SetColorMode(SystemColorMode.System); //TODO DarkMode is not working properly
             Application.Run(new Form1());
         }
     }

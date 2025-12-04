@@ -14,6 +14,9 @@
     <Compile Update="LabeledProgressBar.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Update="UCResult.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Update="UCVideoViewer.cs">
       <SubType>UserControl</SubType>
     </Compile>

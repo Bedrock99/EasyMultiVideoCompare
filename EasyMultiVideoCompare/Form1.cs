@@ -1,3 +1,9 @@
+#region Using...
+
+using DarkModeForms;
+
+#endregion
+
 namespace EasyMultiVideoCompare
 {
     public partial class Form1 : Form
@@ -15,6 +21,7 @@ namespace EasyMultiVideoCompare
         public Form1()
         {
             InitializeComponent();
+            new DarkModeCS(this);
             CConfig.Load();
             ucVideoViewer1.LoadFromConfig();
             //Load Window for position and size before showing
@@ -136,7 +143,7 @@ namespace EasyMultiVideoCompare
                 {
                     UpdateState(m_lstFiles.Count, i, $"Comparing [{(i + 1)}/{m_lstFiles.Count}] {m_lstFiles[i].GeneralInfo.Name}...");
 
-                    DoCompareFile(m_lstFiles[i], i);
+                    DoCompareFile(m_lstFiles[i]);
                 }
 
                 //output results
@@ -158,25 +165,27 @@ namespace EasyMultiVideoCompare
             }).Start();
         }
 
-        void DoCompareFile(CVideoFile pFile_, int iCurPos_)
+        void DoCompareFile(CVideoFile pFile_)
         {
             CResult result = new CResult(pFile_);
-            for (int i = iCurPos_ + 1; i < m_lstFiles.Count; i++)
+            for (int i = 0; i < m_lstFiles.Count; i++)
             {
                 //Do not compare already compared files again
                 if (IsAlreadyCompared(pFile_, m_lstFiles[i]))
                     continue;
 
-                List<(int startIndex, double avgHammingDistance)> matches = VideoHasher.FindClipInVideo(
-                        pFile_.CompareHashes, m_lstFiles[i].CompareHashes, maxHammingDistanceThreshold: CConfig.MaxHammingDistance,
-                        minMatchRatio: CConfig.MinMatchRatio);
+                //TODO Compress matches to one per overlapping.
+                //TODO Matches where middle of video is cut is NOT showing!
+
+                List<CHashMatch> matches = VideoHasher.FindClipInVideo(
+                        pFile_.CompareHashes, m_lstFiles[i].CompareHashes, CConfig.MaxHammingDistance, CConfig.MinMatchRatio);
 
                 if (matches.Count > 0)
                 {
                     double dist = 0;
                     foreach (var match in matches)
                     {
-                        dist += match.avgHammingDistance;
+                        dist += match.HammingDistance;
                     }
                     if (!m_lstDuplicates.Contains2(m_lstFiles[i]))
                         result.AddCompareFile(m_lstFiles[i], dist / matches.Count, matches);
@@ -189,12 +198,16 @@ namespace EasyMultiVideoCompare
 
         bool IsAlreadyCompared(CVideoFile pFile1_, CVideoFile pFile2_)
         {
+            //Same File
+            if (pFile1_.GeneralInfo.FullName == pFile2_.GeneralInfo.FullName)
+                return true;
+
             foreach (var match in m_lstDuplicates)
             {
                 //One of the main files
                 if (match.File.GeneralInfo.FullName == pFile1_.GeneralInfo.FullName)
                 {
-                    foreach(var match2 in match.ComparableFiles)
+                    foreach (var match2 in match.ComparableFiles)
                         if (match2.File.GeneralInfo.FullName == pFile2_.GeneralInfo.FullName)
                             return true;
                 }
@@ -210,7 +223,7 @@ namespace EasyMultiVideoCompare
                 {
                     if (match2.File.GeneralInfo.FullName == pFile2_.GeneralInfo.FullName)
                     {
-                        if(pFile1_.GeneralInfo.FullName == match.File.GeneralInfo.FullName)
+                        if (pFile1_.GeneralInfo.FullName == match.File.GeneralInfo.FullName)
                             return true;
 
                         foreach (var match3 in match.ComparableFiles)
@@ -219,7 +232,7 @@ namespace EasyMultiVideoCompare
                     }
                     if (match2.File.GeneralInfo.FullName == pFile1_.GeneralInfo.FullName)
                     {
-                        if(pFile2_.GeneralInfo.FullName == match.File.GeneralInfo.FullName)
+                        if (pFile2_.GeneralInfo.FullName == match.File.GeneralInfo.FullName)
                             return true;
 
                         foreach (var match3 in match.ComparableFiles)
@@ -232,49 +245,42 @@ namespace EasyMultiVideoCompare
             return false;
         }
 
-        //TODO New View with Option to do something with the found duplicates -> also automatically say which to keep
+        //TODO Add Delete Video button (also automatic)
+        //TODO timeline for matches
         void OutputResults()
         {
             Invoke((MethodInvoker)delegate
             {
-                itv_Results.ItemHeight = CConfig.PreviewBitmapSize - 12;
+                flp_Results.Controls.Clear();
             });
+            m_lstDuplicates = m_lstDuplicates.OrderBy(b => b.HammingDistance).ToList();
 
-            new Task(() =>
+            foreach (CResult res in m_lstDuplicates)
             {
-                UpdateResultsState("sorting...");
-                m_lstDuplicates = m_lstDuplicates.OrderBy(b => b.HammingDistance).ToList();
-
-                int iMain = 1, iComp = 1;
-                foreach (CResult fil in m_lstDuplicates)
+                //TODO Show one item PER match instead per video in view...
+                UCResult uc = new UCResult();
+                uc.Padding = new Padding(0);
+                uc.Margin = new Padding(0, 0, 0, 4);
+                uc.Width = flp_Results.Width - 20;
+                uc.SetResult(res);
+                uc.SelectCompare += Uc_SelectCompare;
+                Invoke((MethodInvoker)delegate
                 {
-                    UpdateResultsState($"loading {iMain}/{m_lstDuplicates.Count}...");
-                    fil.File.LoadThumbnails(CConfig.PreviewBitmapSize);
-                    iComp = 1;
-                    foreach (CResultCompare fil2 in fil.ComparableFiles)
-                    {
-                        UpdateResultsState($"loading {iMain}/{m_lstDuplicates.Count} - compare file {iComp}/{fil.ComparableFiles.Count}...");
-                        fil2.File.LoadThumbnails(CConfig.PreviewBitmapSize);
-                        iComp++;
-                    }
-                    iMain++;
+                    flp_Results.Controls.Add(uc);
+                });
+            }
+        }
 
-                    Invoke((MethodInvoker)delegate
-                    {
-                        TreeNode tnMain = new TreeNode(fil.File.GeneralInfo.Name);
-                        tnMain.Tag = fil;
-                        itv_Results.Nodes.Add(tnMain);
+        private void Uc_SelectCompare(object sender, EventArgs e)
+        {
+            Tuple<CResult, CResultCompare> Res_Comp = (Tuple < CResult, CResultCompare > )sender;
+            foreach (UCResult res in flp_Results.Controls)
+            {
+                if (res.Result != Res_Comp.Item1)
+                    res.Deselect();
+            }
 
-                        foreach (CResultCompare fil2 in fil.ComparableFiles)
-                        {
-                            TreeNode tnComp = new TreeNode(fil2.File.GeneralInfo.Name);
-                            tnComp.Tag = fil2;
-                            tnMain.Nodes.Add(tnComp);
-                        }
-                    });
-                }
-                UpdateResultsState("idle");
-            }).Start();
+            SetResultViewer(Res_Comp.Item1, Res_Comp.Item2);
         }
 
         #endregion
@@ -295,33 +301,14 @@ namespace EasyMultiVideoCompare
             });
         }
 
-        void UpdateResultsState(string strText)
-        {
-            Invoke((MethodInvoker)delegate
-            {
-                tssl_ResultsState.Text = "Results state: " + strText;
-            });
-        }
-
-
         #endregion
 
         #region --- Select files to compare ---
 
-        private void itv_Results_AfterSelect(object sender, TreeViewEventArgs e)
+        private void SetResultViewer(CResult res, CResultCompare comp)
         {
-            if (e.Node.Tag.GetType() != typeof(CResultCompare))
-            {
-                tv_ResultFile1.Nodes.Clear();
-                tv_ResultFile2.Nodes.Clear();
-                ucVideoViewer1.ClearVideos();
-                e.Node.Expand();
-                itv_Results.SelectedNode = e.Node.FirstNode;
-                return;
-            }
-
-            CResultCompare selResultCompare = e.Node.Tag as CResultCompare;
-            CResult selResult = e.Node.Parent.Tag as CResult;
+            CResultCompare selResultCompare = comp;
+            CResult selResult = res;
 
             tv_ResultFile1.Nodes.Clear();
             TreeNode tnMain1 = tv_ResultFile1.Nodes.Add(selResult.File.GeneralInfo.Name);
@@ -351,10 +338,10 @@ namespace EasyMultiVideoCompare
                 selResultCompare.File.VideoInformation.FPS.ToString()))
                 bSame = false;
 
-            tnMain1.BackColor = bSame ? Color.FromArgb(160, 255, 160) : Color.FromArgb(255, 160, 160);
-            tnMain2.BackColor = bSame ? Color.FromArgb(160, 255, 160) : Color.FromArgb(255, 160, 160);
+            tnMain1.BackColor = bSame ? Color.FromArgb(0, 96, 0) : Color.FromArgb(128, 0, 0);
+            tnMain2.BackColor = bSame ? Color.FromArgb(0, 96, 0) : Color.FromArgb(128, 0, 0);
 
-            ucVideoViewer1.SetVideos(selResult.File, selResultCompare.File);
+            ucVideoViewer1.SetVideos(selResult.File, selResultCompare);
 
             tnMain1.ExpandAll();
             tnMain2.ExpandAll();
@@ -364,8 +351,8 @@ namespace EasyMultiVideoCompare
         {
             TreeNode tn1 = tnMain1.Nodes.Add(label + ": " + str1);
             TreeNode tn2 = tnMain2.Nodes.Add(label + ": " + str2);
-            tn1.BackColor = (str1 == str2) ? Color.FromArgb(160, 255, 160) : Color.FromArgb(255, 160, 160);
-            tn2.BackColor = (str1 == str2) ? Color.FromArgb(160, 255, 160) : Color.FromArgb(255, 160, 160);
+            tn1.BackColor = (str1 == str2) ? Color.FromArgb(0, 96, 0) : Color.FromArgb(128, 0, 0);
+            tn2.BackColor = (str1 == str2) ? Color.FromArgb(0, 96, 0) : Color.FromArgb(128, 0, 0);
             return (str1 == str2);
         }
 
@@ -413,5 +400,19 @@ namespace EasyMultiVideoCompare
         }
 
         #endregion
+
+        private void flp_Results_Resize(object sender, EventArgs e)
+        {
+            Timer_Resize.Stop();
+            Timer_Resize.Start();
+        }
+        private void Timer_Resize_Tick(object sender, EventArgs e)
+        {
+            foreach (Control c in flp_Results.Controls)
+            {
+                c.Width = flp_Results.Width - 20;
+            }
+
+        }
     }
 }

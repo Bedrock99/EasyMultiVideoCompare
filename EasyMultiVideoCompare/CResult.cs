@@ -27,7 +27,7 @@
 
         #region --- Functions ---
 
-        public void AddCompareFile(CVideoFile file, double distance, List<(int startIndex, double avgHammingDistance)> matches_)
+        public void AddCompareFile(CVideoFile file, double distance, List<CHashMatch> matches_)
         {
             ComparableFiles.Add(new CResultCompare(file, distance, matches_));
         }

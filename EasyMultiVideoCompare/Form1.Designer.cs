@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             tc_Main = new TabControl();
             tp_Selection = new TabPage();
             tableLayoutPanel1 = new TableLayoutPanel();
@@ -45,7 +46,7 @@
             tp_Results = new TabPage();
             splitContainer1 = new SplitContainer();
             groupBox2 = new GroupBox();
-            itv_Results = new ImageTreeView();
+            flp_Results = new FlowLayoutPanel();
             groupBox1 = new GroupBox();
             tabControl1 = new TabControl();
             tabPage1 = new TabPage();
@@ -56,6 +57,7 @@
             ucVideoViewer1 = new UCVideoViewer();
             statusStrip1 = new StatusStrip();
             tssl_ResultsState = new ToolStripStatusLabel();
+            Timer_Resize = new System.Windows.Forms.Timer(components);
             tc_Main.SuspendLayout();
             tp_Selection.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
@@ -280,7 +282,7 @@
             // 
             // groupBox2
             // 
-            groupBox2.Controls.Add(itv_Results);
+            groupBox2.Controls.Add(flp_Results);
             groupBox2.Dock = DockStyle.Fill;
             groupBox2.Location = new Point(0, 0);
             groupBox2.Name = "groupBox2";
@@ -289,17 +291,17 @@
             groupBox2.TabStop = false;
             groupBox2.Text = "Found duplicates:";
             // 
-            // itv_Results
+            // flp_Results
             // 
-            itv_Results.Dock = DockStyle.Fill;
-            itv_Results.DrawMode = TreeViewDrawMode.OwnerDrawAll;
-            itv_Results.FullRowSelect = true;
-            itv_Results.ItemHeight = 18;
-            itv_Results.Location = new Point(3, 19);
-            itv_Results.Name = "itv_Results";
-            itv_Results.Size = new Size(122, 274);
-            itv_Results.TabIndex = 0;
-            itv_Results.AfterSelect += itv_Results_AfterSelect;
+            flp_Results.AutoScroll = true;
+            flp_Results.Dock = DockStyle.Fill;
+            flp_Results.FlowDirection = FlowDirection.TopDown;
+            flp_Results.Location = new Point(3, 19);
+            flp_Results.Name = "flp_Results";
+            flp_Results.Size = new Size(122, 274);
+            flp_Results.TabIndex = 0;
+            flp_Results.WrapContents = false;
+            flp_Results.Resize += flp_Results_Resize;
             // 
             // groupBox1
             // 
@@ -336,6 +338,8 @@
             // 
             // splitContainer2
             // 
+            splitContainer2.BackColor = Color.Transparent;
+            splitContainer2.BorderStyle = BorderStyle.FixedSingle;
             splitContainer2.Dock = DockStyle.Fill;
             splitContainer2.Location = new Point(3, 3);
             splitContainer2.Name = "splitContainer2";
@@ -349,7 +353,7 @@
             // 
             splitContainer2.Panel2.Controls.Add(tv_ResultFile2);
             splitContainer2.Size = new Size(600, 240);
-            splitContainer2.SplitterDistance = 118;
+            splitContainer2.SplitterDistance = 117;
             splitContainer2.TabIndex = 2;
             // 
             // tv_ResultFile1
@@ -357,7 +361,7 @@
             tv_ResultFile1.Dock = DockStyle.Fill;
             tv_ResultFile1.Location = new Point(0, 0);
             tv_ResultFile1.Name = "tv_ResultFile1";
-            tv_ResultFile1.Size = new Size(600, 118);
+            tv_ResultFile1.Size = new Size(598, 115);
             tv_ResultFile1.TabIndex = 0;
             // 
             // tv_ResultFile2
@@ -365,7 +369,7 @@
             tv_ResultFile2.Dock = DockStyle.Fill;
             tv_ResultFile2.Location = new Point(0, 0);
             tv_ResultFile2.Name = "tv_ResultFile2";
-            tv_ResultFile2.Size = new Size(600, 118);
+            tv_ResultFile2.Size = new Size(598, 117);
             tv_ResultFile2.TabIndex = 1;
             // 
             // tabPage2
@@ -402,6 +406,10 @@
             tssl_ResultsState.Name = "tssl_ResultsState";
             tssl_ResultsState.Size = new Size(97, 17);
             tssl_ResultsState.Text = "Results state: idle";
+            // 
+            // Timer_Resize
+            // 
+            Timer_Resize.Tick += Timer_Resize_Tick;
             // 
             // Form1
             // 
@@ -457,7 +465,6 @@
         private Button btn_AddFolder;
         private LabeledProgressBar lpb_RunProgressCreateHashes;
         private TextBox tb_Log;
-        private ImageTreeView itv_Results;
         private SplitContainer splitContainer1;
         private GroupBox groupBox2;
         private GroupBox groupBox1;
@@ -471,5 +478,7 @@
         private LabeledProgressBar lpb_RunProgressCompare;
         private TableLayoutPanel tableLayoutPanel2;
         private LabeledProgressBar lpb_RunProgressOverall;
+        private FlowLayoutPanel flp_Results;
+        private System.Windows.Forms.Timer Timer_Resize;
     }
 }
